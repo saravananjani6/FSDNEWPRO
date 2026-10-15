@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "status": "published",
+  "symptomList": ["fever", "cough", "diarrhea", "vomiting", "headache", "abdominal_pain", "rash", "pregnancy_danger"],
+  "questions": [
+    { "id": "ageGroup", "type": "choice", "textKey": "q_age", "options": ["infant", "child", "adult", "older_adult"] },
+    { "id": "pregnant", "type": "yesno", "textKey": "q_pregnant" },
+    { "id": "symptoms", "type": "multi", "textKey": "q_symptoms" },
+    { "id": "duration", "type": "choice", "textKey": "q_duration", "options": ["today", "1_2_days", "3_plus_days"] },
+    { "id": "severity", "type": "choice", "textKey": "q_severity", "options": ["mild", "medium", "severe"] },
+    { "id": "bodyPart", "type": "body", "textKey": "q_body", "options": ["head", "chest", "belly", "arm", "leg", "skin"] },
+    { "id": "breathing_difficulty", "type": "yesno", "textKey": "q_breathing" },
+    { "id": "chest_pain", "type": "yesno", "textKey": "q_chest" },
+    { "id": "severe_bleeding", "type": "yesno", "textKey": "q_bleeding" },
+    { "id": "unconscious", "type": "yesno", "textKey": "q_unconscious" },
+    { "id": "pregnancy_danger", "type": "yesno", "textKey": "q_pregnancy_danger" }
+  ],
+  "rules": [
+    { "id": "red_breathing", "color": "RED", "priority": 100, "any": [{ "field": "breathing_difficulty", "equals": true }], "adviceKey": "advice_red", "reasonKey": "reason_breathing" },
+    { "id": "red_chest", "color": "RED", "priority": 100, "any": [{ "field": "chest_pain", "equals": true }], "adviceKey": "advice_red", "reasonKey": "reason_chest" },
+    { "id": "red_bleeding", "color": "RED", "priority": 100, "any": [{ "field": "severe_bleeding", "equals": true }], "adviceKey": "advice_red", "reasonKey": "reason_bleeding" },
+    { "id": "red_unconscious", "color": "RED", "priority": 100, "any": [{ "field": "unconscious", "equals": true }], "adviceKey": "advice_red", "reasonKey": "reason_unconscious" },
+    { "id": "red_pregnancy", "color": "RED", "priority": 100, "all": [{ "field": "pregnant", "equals": true }, { "field": "pregnancy_danger", "equals": true }], "adviceKey": "advice_red", "reasonKey": "reason_pregnancy" },
+    { "id": "yellow_fever_3_days", "color": "YELLOW", "priority": 60, "all": [{ "field": "symptoms", "includes": "fever" }, { "field": "duration", "equals": "3_plus_days" }], "adviceKey": "advice_yellow", "reasonKey": "reason_fever" },
+    { "id": "yellow_diarrhea_vomit", "color": "YELLOW", "priority": 60, "all": [{ "field": "symptoms", "includes": "diarrhea" }, { "field": "symptoms", "includes": "vomiting" }], "adviceKey": "advice_yellow", "reasonKey": "reason_dehydration" },
+    { "id": "yellow_child_fever", "color": "YELLOW", "priority": 55, "all": [{ "field": "ageGroup", "in": ["infant", "child"] }, { "field": "symptoms", "includes": "fever" }], "adviceKey": "advice_yellow", "reasonKey": "reason_child" },
+    { "id": "yellow_severe", "color": "YELLOW", "priority": 50, "any": [{ "field": "severity", "equals": "severe" }], "adviceKey": "advice_yellow", "reasonKey": "reason_severe" },
+    { "id": "green_mild", "color": "GREEN", "priority": 10, "all": [{ "field": "severity", "in": ["mild", "medium"] }], "adviceKey": "advice_green", "reasonKey": "reason_selfcare" }
+  ]
+}

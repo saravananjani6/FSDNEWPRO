@@ -1,0 +1,42 @@
+{
+  "name": "VMcare - Rural Healthcare Triage App",
+  "short_name": "VMcare App",
+  "description": "Offline-First Rural Healthcare Triage & Patient Assistance System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0284c7",
+  "orientation": "any",
+  "categories": ["health", "medical"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Self-Triage Assessment",
+      "short_name": "Triage",
+      "description": "Check symptoms and vitals",
+      "url": "/triage",
+      "icons": [{ "src": "/icons/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Elderly Voice Mode",
+      "short_name": "Senior Mode",
+      "description": "Audio-guided symptom checker",
+      "url": "/senior-triage",
+      "icons": [{ "src": "/icons/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "My Records",
+      "short_name": "Records",
+      "description": "Look up patient history",
+      "url": "/my-records",
+      "icons": [{ "src": "/icons/icon.svg", "sizes": "any" }]
+    }
+  ]
+}

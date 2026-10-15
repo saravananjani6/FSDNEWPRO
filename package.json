@@ -1,0 +1,16 @@
+{
+  "name": "ruralcare",
+  "version": "1.0.0",
+  "description": "Offline-first AI symptom triage for rural, low-bandwidth areas",
+  "private": true,
+  "scripts": {
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "admin": "cd admin && npm run dev",
+    "mobile": "cd mobile && npm start",
+    "seed": "cd server && npm run seed",
+    "install:all": "npm install --prefix server && npm install --prefix client && npm install --prefix mobile"
+  },
+  "keywords": ["rural-healthcare", "triage", "offline-first", "mern", "expo"],
+  "license": "MIT"
+}
