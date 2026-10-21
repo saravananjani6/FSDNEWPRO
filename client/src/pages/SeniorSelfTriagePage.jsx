@@ -130,7 +130,7 @@ export function SeniorSelfTriagePage() {
     <div className="senior-page-wrapper">
       {/* Top Banner: Emergency 108 SOS + Brand + Utility Actions */}
       <div className="senior-sos-bar">
-        <button
+        {false && <button
           type="button"
           onClick={handleEmergencySOS}
           className="btn-senior-sos-pulse"
@@ -138,7 +138,7 @@ export function SeniorSelfTriagePage() {
         >
           <PhoneCall size={26} className="sos-phone-bounce" />
           <span className="sos-big-label">{t('senior_btn_emergency_sos')}</span>
-        </button>
+        </button>}
 
         <div className="senior-top-brand">
           <span className="senior-top-emoji">👴👵</span>
@@ -220,7 +220,7 @@ export function SeniorSelfTriagePage() {
 
             {/* Action buttons */}
             <div className="billboard-action-row">
-              {triageResult.triageLevel === 'EMERGENCY' && (
+              {false && triageResult.triageLevel === 'EMERGENCY' && (
                 <a
                   href="tel:108"
                   className="btn-billboard-call-108"
@@ -285,7 +285,7 @@ export function SeniorSelfTriagePage() {
       </div>
 
       {/* Emergency SOS Modal */}
-      {showEmergencyModal && (
+      {false && showEmergencyModal && (
         <div className="senior-emergency-takeover">
           <div className="sos-modal-card">
             <div className="sos-modal-icon">

@@ -1,5 +1,6 @@
 const TriageRecord = require('../models/TriageRecord');
 const Patient = require('../models/Patient');
+const { evaluateTriage } = require('../services/triageEngine');
 const crypto = require('crypto');
 const uuidv4 = () => (crypto.randomUUID ? crypto.randomUUID() : ('rec-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 9)));
 
@@ -25,17 +26,15 @@ const createTriageRecord = async (req, res, next) => {
       triageLevel: clientTriageLevel,
       recommendationEn: clientRecEn,
       recommendationTa: clientRecTa,
-      redFlags: clientRedFlags
+      redFlags: clientRedFlags,
+      confidenceScore: clientConfidenceScore,
+      confidenceLabel: clientConfidenceLabel
     } = req.body;
 
-    if (!patientId) {
-      return res.status(400).json({ success: false, message: 'patientId is required' });
-    }
-
     // Lookup patient
-    const patient = await Patient.findOne({
+    const patient = patientId ? await Patient.findOne({
       $or: [{ patientId }, { localId: patientId }, { _id: patientId.match(/^[0-9a-fA-F]{24}$/) ? patientId : null }]
-    });
+    }) : null;
 
     const patientAge = patient ? patient.age : 30;
     const patientName = patient ? patient.name : 'Unknown';
@@ -67,7 +66,7 @@ const createTriageRecord = async (req, res, next) => {
       recordId: assignedRecordId,
       localId: effectiveLocalId,
       patientId: patient ? patient.patientId : patientId,
-      patientName,
+      patientName: patient ? patientName : 'Anonymous self-assessment',
       patientAge,
       patientGender,
       symptoms,
@@ -76,6 +75,8 @@ const createTriageRecord = async (req, res, next) => {
       redFlags: effectiveRedFlags,
       recommendationEn: effectiveRecEn,
       recommendationTa: effectiveRecTa,
+      confidenceScore: Number.isFinite(Number(clientConfidenceScore)) ? Number(clientConfidenceScore) : undefined,
+      confidenceLabel: clientConfidenceLabel || '',
       notes,
       healthcareWorkerId: req.user ? req.user._id : 'worker-local',
       healthcareWorkerName: req.user ? req.user.name : 'VMcare Health Worker',

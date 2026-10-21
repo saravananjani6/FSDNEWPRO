@@ -71,9 +71,6 @@ export function TriageAssessmentPage() {
         setSelectedPatientId(targetId);
         const p = all.find((item) => item.patientId === targetId || item.localId === targetId);
         if (p) setPatient(p);
-      } else if (all.length > 0 && !selectedPatientId) {
-        setSelectedPatientId(all[0].patientId);
-        setPatient(all[0]);
       }
     }
     loadPatients();
@@ -97,40 +94,42 @@ export function TriageAssessmentPage() {
   // Evaluate assessment and trigger results
   const handleEvaluateClick = (e) => {
     e.preventDefault();
-    if (!patient) {
+    if (false && !patient) {
       alert(lang === 'ta' ? 'தயவுசெய்து ஒரு நோயாளியை தேர்ந்தெடுக்கவும்.' : 'Please select a patient first.');
       return;
     }
 
-    const result = evaluateClientTriage(symptoms, vitals, patient.age);
+    const result = evaluateClientTriage(symptoms, vitals, patient?.age || 30);
     setCurrentResult(result);
     setShowModal(true);
   };
 
   // Save to IndexedDB and queue
   const handleSaveAssessment = async () => {
-    if (!patient || !currentResult) return;
+    if (!currentResult) return;
     setIsSaving(true);
     try {
       await triageRepository.create(
         {
-          patientId: patient.patientId,
-          patientName: patient.name,
-          patientAge: patient.age,
-          patientGender: patient.gender,
+          patientId: patient?.patientId || '',
+          patientName: patient?.name || 'Anonymous self-assessment',
+          patientAge: patient?.age || 0,
+          patientGender: patient?.gender || '',
           symptoms,
           vitals,
           triageLevel: currentResult.triageLevel,
           redFlags: currentResult.redFlags,
           recommendationEn: currentResult.recommendationEn,
           recommendationTa: currentResult.recommendationTa,
+          confidenceScore: currentResult.confidenceScore,
+          confidenceLabel: currentResult.confidenceLabel,
           notes
         },
         user
       );
 
       setShowModal(false);
-      if (user && user.role === 'admin') {
+      if (user && user.role === 'admin' && patient) {
         navigate(`/patients/${patient.patientId}`);
       } else {
         navigate('/my-records');

@@ -118,7 +118,7 @@ export function Navbar() {
           {/* Quick Action Shortcuts & 3-Line Menu Trigger */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {/* Quick 108 Emergency Call Button */}
-            <a
+            {false && <a
               href="tel:108"
               style={{
                 display: 'inline-flex',
@@ -137,7 +137,7 @@ export function Navbar() {
             >
               <PhoneCall size={14} />
               <span>108</span>
-            </a>
+            </a>}
 
             {/* Sync Status Button */}
             <Link
@@ -584,7 +584,7 @@ export function Navbar() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {/* National Ambulance 108 */}
-                  <a
+                  {false && <a
                     href="tel:108"
                     style={{
                       display: 'flex',
@@ -607,10 +607,10 @@ export function Navbar() {
                         {lang === 'ta' ? '24/7 கட்டணமில்லா அவசர ஊர்தி' : 'Toll-free 24/7 emergency dispatch'}
                       </span>
                     </div>
-                  </a>
+                  </a>}
 
                   {/* Install PWA Button */}
-                  {!installed && (
+                  {false && !installed && (
                     <button
                       type="button"
                       onClick={() => {

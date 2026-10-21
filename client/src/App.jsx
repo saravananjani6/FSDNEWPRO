@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NetworkProvider } from './context/NetworkContext';
@@ -22,8 +22,14 @@ import { SyncDashboardPage } from './pages/SyncDashboardPage';
 import { ConflictResolutionPage } from './pages/ConflictResolutionPage';
 import { AuditLogsPage } from './pages/AuditLogsPage';
 import { PrivacyDisclaimerPage } from './pages/PrivacyDisclaimerPage';
-import { SeniorSelfTriagePage } from './pages/SeniorSelfTriagePage';
-import { NearbyClinicsMapPage } from './pages/NearbyClinicsMapPage';
+
+// Heavy, network-dependent screens are loaded only when requested so triage opens quickly on slow networks.
+const SeniorSelfTriagePage = lazy(() => import('./pages/SeniorSelfTriagePage'));
+const NearbyClinicsMapPage = lazy(() => import('./pages/NearbyClinicsMapPage'));
+
+function DeferredScreen({ children }) {
+  return <Suspense fallback={<p style={{ padding: '24px' }}>Loading only the screen you selected…</p>}>{children}</Suspense>;
+}
 
 function ProtectedRoute({ children, allowedRoles = ['admin'] }) {
   const { user } = useAuth();
@@ -69,7 +75,7 @@ export function App() {
                 <Route path="/doctor-login" element={<StaffLoginPage />} />
 
                 {/* Senior Citizen Zero-Literacy Voice & Visual Self-Triage Mode */}
-                <Route path="/senior-triage" element={<SeniorSelfTriagePage />} />
+                <Route path="/senior-triage" element={<DeferredScreen><SeniorSelfTriagePage /></DeferredScreen>} />
 
                 {/* Core Patient App Routes (Accessible by Patient without credentials) */}
                 <Route
@@ -102,9 +108,11 @@ export function App() {
                 <Route
                   path="/register"
                   element={
-                    <MainLayout>
-                      <PatientRegisterPage />
-                    </MainLayout>
+                    <ProtectedRoute allowedRoles={['admin', 'health_worker']}>
+                      <MainLayout>
+                        <PatientRegisterPage />
+                      </MainLayout>
+                    </ProtectedRoute>
                   }
                 />
 
@@ -122,7 +130,7 @@ export function App() {
                   path="/clinics"
                   element={
                     <MainLayout>
-                      <NearbyClinicsMapPage />
+                      <DeferredScreen><NearbyClinicsMapPage /></DeferredScreen>
                     </MainLayout>
                   }
                 />
@@ -131,7 +139,7 @@ export function App() {
                 <Route
                   path="/queue"
                   element={
-                    <ProtectedRoute allowedRoles={['admin', 'health_worker', 'doctor']}>
+                    <ProtectedRoute allowedRoles={['admin', 'doctor']}>
                       <MainLayout>
                         <TriageQueuePage />
                       </MainLayout>

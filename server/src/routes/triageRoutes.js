@@ -7,6 +7,7 @@ const {
   getAllTriageRecords
 } = require('../controllers/triageController');
 const { protect, optionalAuth, requireAdmin } = require('../middleware/authMiddleware');
+const { requireRole } = require('../middleware/roleMiddleware');
 const { logAudit } = require('../middleware/auditMiddleware');
 
 // Patient Kiosk / Self-Assessment Creation
@@ -15,7 +16,7 @@ router.get('/:id', optionalAuth, getTriageById);
 
 // Admin-Protected Metrics & Triage Queue
 router.get('/dashboard/metrics', protect, requireAdmin, getDashboardMetrics);
-router.get('/', protect, requireAdmin, getAllTriageRecords);
+router.get('/', protect, requireRole('admin', 'doctor'), getAllTriageRecords);
 
 module.exports = router;
 

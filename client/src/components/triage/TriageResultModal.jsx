@@ -13,7 +13,7 @@ import {
 
 export function TriageResultModal({ result, patient, onSave, onCancel, isSaving }) {
   const { lang, t } = useLanguage();
-  const { triageLevel, redFlagsDetailed = [], recommendationEn, recommendationTa } = result;
+  const { triageLevel, redFlagsDetailed = [], recommendationEn, recommendationTa, confidenceScore, confidenceLabel } = result;
 
   useEffect(() => {
     // Automatically play alert sound on result modal appearance
@@ -74,7 +74,7 @@ export function TriageResultModal({ result, patient, onSave, onCancel, isSaving 
         </div>
 
         {/* Action Callout (especially for Emergency 108) */}
-        {isEmergency && (
+        {false && isEmergency && (
           <div className="emergency-callout-banner">
             <div className="callout-icon">🚨</div>
             <div className="callout-body">
@@ -98,6 +98,11 @@ export function TriageResultModal({ result, patient, onSave, onCancel, isSaving 
         <div className="result-section recommendation-box">
           <h4 className="section-label">{t('result_recommendations')}</h4>
           <p className="recommendation-text">{recommendation}</p>
+        </div>
+
+        <div className="result-section" style={{ background: '#f8fafc', borderRadius: '10px', padding: '12px' }}>
+          <h4 className="section-label">Triage confidence</h4>
+          <p style={{ margin: 0 }}><strong>{confidenceScore ?? '—'}%</strong>{confidenceLabel ? ` — ${confidenceLabel}` : ''}. This reflects answer completeness, not a diagnosis.</p>
         </div>
 
         {/* Red Flags / Clinical Triggers */}

@@ -147,7 +147,7 @@ export function evaluateClientTriage(symptoms = {}, vitals = {}, patientAge = 30
 
   if (redFlags.length > 0) {
     triageLevel = 'EMERGENCY';
-    recommendationEn = 'EMERGENCY: Immediate medical attention required! Call ambulance (108) or transport immediately to the nearest Emergency Hospital.';
+    recommendationEn = 'EMERGENCY: Seek immediate in-person care at the nearest emergency hospital.';
     recommendationTa = 'அவசரம்: உடனடியாக மருத்துவ சிகிச்சை தேவை! 108 அவசர ஊர்தியை அழைக்கவும் அல்லது உடனடியாக அருகிலுள்ள மருத்துவமனைக்கு அழைத்துச் செல்லவும்.';
   } else if (urgentFlags.length > 0) {
     triageLevel = 'URGENT';
@@ -159,9 +159,17 @@ export function evaluateClientTriage(symptoms = {}, vitals = {}, patientAge = 30
     recommendationTa = 'வழக்கமானது: பொதுவான கவனிப்பு போதுமானது. ஓய்வு எடுத்து, போதுமான நீர் அருந்தவும். அறிகுறிகள் அதிகமானால் உடனடியாக மீண்டும் வரவும்.';
   }
 
+  const suppliedVitals = [temp, hr, spo2, rr, sbp, dbp].filter((value) => value !== null).length;
+  const reportedSymptoms = Object.values(symptoms).filter(Boolean).length;
+  const confidenceScore = Math.min(95, 55 + suppliedVitals * 6 + Math.min(reportedSymptoms, 5) * 2);
+  const confidenceLabel = confidenceScore >= 85 ? 'High data completeness' : confidenceScore >= 70 ? 'Moderate data completeness' : 'Limited data completeness';
+
   return {
     triageLevel,
     redFlags: [...redFlags, ...urgentFlags].map((f) => f.en),
+    redFlagsDetailed: [...redFlags, ...urgentFlags],
+    confidenceScore,
+    confidenceLabel,
     redFlagsDetailed: [...redFlags, ...urgentFlags],
     recommendationEn,
     recommendationTa

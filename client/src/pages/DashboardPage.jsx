@@ -648,7 +648,7 @@ export function DashboardPage() {
             <MapPin size={16} />
             <span>{lang === 'ta' ? 'வரைபடம்' : 'Hospitals Map'}</span>
           </Link>
-          <a
+          {false && <a
             href="tel:108"
             style={{
               backgroundColor: '#dc2626',
@@ -666,7 +666,7 @@ export function DashboardPage() {
           >
             <PhoneCall size={18} />
             <span>{lang === 'ta' ? '108 அழைக்க' : 'Call 108 Now'}</span>
-          </a>
+          </a>}
         </div>
       </div>
 

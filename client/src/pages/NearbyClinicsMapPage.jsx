@@ -323,7 +323,7 @@ export function NearbyClinicsMapPage() {
       </div>
 
       {/* 24/7 National Emergency 108 Ambulance Call Strip */}
-      <div
+      {false && <div
         style={{
           background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
           borderRadius: '16px',
@@ -371,7 +371,7 @@ export function NearbyClinicsMapPage() {
           <PhoneCall size={18} />
           <span>{lang === 'ta' ? '108 அழைக்கவும்' : 'Call 108 Ambulance'}</span>
         </a>
-      </div>
+      </div>}
 
       {/* Location Bar & Village Selector */}
       <div
@@ -462,6 +462,17 @@ export function NearbyClinicsMapPage() {
           </div>
         </div>
       </div>
+
+      {nearestFacility && (
+        <button
+          type="button"
+          onClick={() => handleSelectFacility(nearestFacility)}
+          style={{ width: '100%', marginBottom: '16px', border: '1px solid #86efac', background: '#f0fdf4', borderRadius: '12px', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', color: '#166534', fontWeight: 800 }}
+        >
+          <span>Nearest facility: {lang === 'ta' ? nearestFacility.nameTa : nearestFacility.name} ({nearestFacility.distance} km)</span>
+          <span>Show on map</span>
+        </button>
+      )}
 
       {/* FILTER PILLS */}
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>

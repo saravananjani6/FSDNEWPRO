@@ -42,6 +42,8 @@ export const triageRepository = {
       redFlags: recordData.redFlags || [],
       recommendationEn: recordData.recommendationEn,
       recommendationTa: recordData.recommendationTa,
+      confidenceScore: recordData.confidenceScore,
+      confidenceLabel: recordData.confidenceLabel || '',
       notes: recordData.notes || '',
       healthcareWorkerName: user ? user.name : 'Patient Self-Assessment',
       deviceId: localStorage.getItem('vmcare_device_id') || localStorage.getItem('ashaseva_device_id') || 'browser-client',
