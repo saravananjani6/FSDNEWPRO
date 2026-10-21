@@ -20,8 +20,9 @@ router.post('/register', rules([
 ]), validate, async (req, res, next) => {
   try {
     const { name, email, password, phone = '', village = '', role = 'patient' } = req.body;
-    if (await User.exists({ email })) return res.status(409).json({ message: 'Email already registered' });
-    const user = await User.create({ name, email, phone, village, role, passwordHash: await User.hashPassword(password) });
+    const normalizedEmail = String(email).trim().toLowerCase();
+    if (await User.exists({ email: normalizedEmail })) return res.status(409).json({ message: 'Email already registered' });
+    const user = await User.create({ name, email: normalizedEmail, phone, village, role, passwordHash: await User.hashPassword(password) });
     const rt = refreshToken();
     user.refreshTokenHash = await bcrypt.hash(rt, 10);
     await user.save();
@@ -36,7 +37,7 @@ router.post('/login', rules([
   { field: 'password', required: true }
 ]), validate, async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: String(req.body.email).trim().toLowerCase() });
     if (!user || !user.isActive || !(await user.checkPassword(req.body.password))) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }

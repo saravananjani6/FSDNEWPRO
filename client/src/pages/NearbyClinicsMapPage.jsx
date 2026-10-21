@@ -10,6 +10,7 @@ import {
   calculateDistanceKm,
   estimateTravelMinutes
 } from '../data/clinicsData';
+import { getNearbyFacilities } from '../services/nearbyFacilities';
 import {
   MapPin,
   Navigation,
@@ -38,16 +39,20 @@ export function NearbyClinicsMapPage() {
   const [selectedVillageId, setSelectedVillageId] = useState('v1');
   const [filterType, setFilterType] = useState('all'); // 'all', 'hospital', 'phc', 'clinic'
   const [selectedFacilityId, setSelectedFacilityId] = useState(null);
+  const [liveFacilities, setLiveFacilities] = useState([]);
+  const [facilityStatus, setFacilityStatus] = useState('idle');
 
   // Map refs
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef({});
   const userMarkerRef = useRef(null);
+  const lastLookupRef = useRef({ lat: null, lng: null, at: 0 });
 
   // 1. Calculate distances from current user location to each facility
   const sortedFacilities = useMemo(() => {
-    const list = RURAL_HEALTH_FACILITIES.map((facility) => {
+    const source = liveFacilities.length ? liveFacilities : RURAL_HEALTH_FACILITIES;
+    const list = source.map((facility) => {
       const distance = calculateDistanceKm(
         userLocation.lat,
         userLocation.lng,
@@ -64,7 +69,7 @@ export function NearbyClinicsMapPage() {
 
     list.sort((a, b) => (a.distance || 0) - (b.distance || 0));
     return list;
-  }, [userLocation]);
+  }, [userLocation, liveFacilities]);
 
   // Filtered facilities
   const filteredFacilities = useMemo(() => {
@@ -107,10 +112,44 @@ export function NearbyClinicsMapPage() {
     );
   };
 
-  // Try GPS on first load
+  // Keep the location current while this page is open.
   useEffect(() => {
     requestGPSLocation();
+    if (!('geolocation' in navigator)) return undefined;
+
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const { latitude, longitude, accuracy } = pos.coords;
+        setUserLocation({ lat: latitude, lng: longitude, name: 'Your Live GPS Location', village: 'Current Location', accuracy: Math.round(accuracy) });
+        setGpsStatus('active');
+      },
+      (err) => setGpsStatus(err.code === 1 ? 'denied' : 'error'),
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+    return () => navigator.geolocation.clearWatch(watchId);
   }, []);
+
+  // Query current OpenStreetMap healthcare data. The bundled list remains available
+  // when a device is offline or the directory service is temporarily unavailable.
+  useEffect(() => {
+    const last = lastLookupRef.current;
+    const movedKm = last.lat === null ? Infinity : calculateDistanceKm(last.lat, last.lng, userLocation.lat, userLocation.lng);
+    if (movedKm < 0.25 && Date.now() - last.at < 120000) return;
+
+    let cancelled = false;
+    setFacilityStatus('loading');
+    getNearbyFacilities(userLocation)
+      .then((facilities) => {
+        if (cancelled) return;
+        lastLookupRef.current = { lat: userLocation.lat, lng: userLocation.lng, at: Date.now() };
+        setLiveFacilities(facilities);
+        setFacilityStatus(facilities.length ? 'live' : 'fallback');
+      })
+      .catch(() => {
+        if (!cancelled) setFacilityStatus('fallback');
+      });
+    return () => { cancelled = true; };
+  }, [userLocation.lat, userLocation.lng]);
 
   // Handle village preset change
   const handleVillagePresetChange = (villageId) => {
@@ -228,20 +267,20 @@ export function NearbyClinicsMapPage() {
         <div style="font-family: inherit; font-size: 13px; min-width: 210px; padding: 4px;">
           <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
             <span style="font-size: 10px; font-weight: 800; background: ${bg}; color: #fff; padding: 2px 6px; border-radius: 4px;">
-              ${lang === 'ta' ? facility.typeLabelTa : facility.typeLabel}
+              ${lang === 'ta' ? (facility.typeLabelTa || facility.typeLabel) : facility.typeLabel}
             </span>
             <span style="font-size: 11px; font-weight: 700; color: #166534; background: #dcfce7; padding: 2px 6px; border-radius: 4px;">
               ${facility.distance} km
             </span>
           </div>
           <strong style="color: #0f172a; font-size: 14px; display: block; margin-bottom: 4px;">
-            ${lang === 'ta' ? facility.nameTa : facility.name}
+            ${lang === 'ta' ? (facility.nameTa || facility.name) : facility.name}
           </strong>
           <div style="color: #64748b; font-size: 12px; margin-bottom: 6px;">
-            📍 ${lang === 'ta' ? facility.addressTa : facility.address}
+            📍 ${lang === 'ta' ? (facility.addressTa || facility.address) : facility.address}
           </div>
           <div style="color: #0369a1; font-size: 11px; font-weight: 600; margin-bottom: 8px;">
-            🕒 ${lang === 'ta' ? facility.timingTa : facility.timing}
+            🕒 ${lang === 'ta' ? (facility.timingTa || facility.timing) : facility.timing}
           </div>
           <div style="display: flex; gap: 6px; margin-top: 8px;">
             <a href="tel:${facility.phone}" style="flex: 1; background: #0284c7; color: #fff; text-align: center; padding: 6px; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 12px; display: inline-block;">
@@ -409,6 +448,21 @@ export function NearbyClinicsMapPage() {
               ● {lang === 'ta' ? 'நேரடி ஜிபிஎஸ் இயங்குகிறது' : 'Live GPS Active'}
             </span>
           )}
+          {facilityStatus === 'loading' && (
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0369a1', backgroundColor: '#e0f2fe', padding: '4px 10px', borderRadius: '8px' }}>
+              {lang === 'ta' ? 'அருகிலுள்ள மையங்களைத் தேடுகிறது…' : 'Finding nearby facilities…'}
+            </span>
+          )}
+          {facilityStatus === 'live' && (
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#166534', backgroundColor: '#dcfce7', padding: '4px 10px', borderRadius: '8px' }}>
+              {lang === 'ta' ? 'நேரடி வரைபடத் தரவு' : 'Live map data'}
+            </span>
+          )}
+          {facilityStatus === 'fallback' && (
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#92400e', backgroundColor: '#fef3c7', padding: '4px 10px', borderRadius: '8px' }}>
+              {lang === 'ta' ? 'சேமித்த மையப் பட்டியல்' : 'Offline facility list'}
+            </span>
+          )}
 
           <button
             type="button"
@@ -469,7 +523,7 @@ export function NearbyClinicsMapPage() {
           onClick={() => handleSelectFacility(nearestFacility)}
           style={{ width: '100%', marginBottom: '16px', border: '1px solid #86efac', background: '#f0fdf4', borderRadius: '12px', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', color: '#166534', fontWeight: 800 }}
         >
-          <span>Nearest facility: {lang === 'ta' ? nearestFacility.nameTa : nearestFacility.name} ({nearestFacility.distance} km)</span>
+          <span>Nearest facility: {lang === 'ta' ? (nearestFacility.nameTa || nearestFacility.name) : nearestFacility.name} ({nearestFacility.distance} km)</span>
           <span>Show on map</span>
         </button>
       )}
@@ -648,7 +702,7 @@ export function NearbyClinicsMapPage() {
                           color: fac.type === 'hospital' ? '#991b1b' : fac.type === 'phc' ? '#166534' : '#0369a1'
                         }}
                       >
-                        {lang === 'ta' ? fac.typeLabelTa : fac.typeLabel}
+                        {lang === 'ta' ? (fac.typeLabelTa || fac.typeLabel) : fac.typeLabel}
                       </span>
 
                       {fac.isEmergency24x7 && (
@@ -659,7 +713,7 @@ export function NearbyClinicsMapPage() {
                     </div>
 
                     <strong style={{ fontSize: '1rem', color: '#0f172a', display: 'block', lineHeight: 1.3 }}>
-                      {lang === 'ta' ? fac.nameTa : fac.name}
+                      {lang === 'ta' ? (fac.nameTa || fac.name) : fac.name}
                     </strong>
                   </div>
 
@@ -675,11 +729,11 @@ export function NearbyClinicsMapPage() {
                 </div>
 
                 <div style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: '8px' }}>
-                  📍 {lang === 'ta' ? fac.addressTa : fac.address}
+                  📍 {lang === 'ta' ? (fac.addressTa || fac.address) : fac.address}
                 </div>
 
                 <div style={{ fontSize: '0.8rem', color: '#0369a1', fontWeight: 600, marginBottom: '10px' }}>
-                  🕒 {lang === 'ta' ? fac.timingTa : fac.timing}
+                  🕒 {lang === 'ta' ? (fac.timingTa || fac.timing) : fac.timing}
                 </div>
 
                 {/* Key services chips */}

@@ -27,17 +27,6 @@ build/
 out/
 .next/
 
-# Expo & React Native
-.expo/
-.expo-shared/
-web-build/
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-*.orig.*
-
 # Logs
 logs
 *.log

@@ -6,7 +6,7 @@ const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
   const [lang, setLang] = useState(() => {
-    return localStorage.getItem('vmcare_language') || localStorage.getItem('ashaseva_language') || 'ta';
+    return localStorage.getItem('vmcare_language') || 'ta';
   });
 
   useEffect(() => {

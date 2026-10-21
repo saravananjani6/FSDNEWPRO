@@ -421,6 +421,7 @@ export function DashboardPage() {
         {/* Card 1: Self-Triage */}
         <Link
           to="/triage"
+          className="service-card"
           style={{
             backgroundColor: '#ffffff',
             borderRadius: '16px',
@@ -457,6 +458,7 @@ export function DashboardPage() {
         {/* Card 2: Senior Voice & Visual Mode */}
         <Link
           to="/senior-triage"
+          className="service-card"
           style={{
             backgroundColor: '#ffffff',
             borderRadius: '16px',
@@ -493,6 +495,7 @@ export function DashboardPage() {
         {/* Card 3: My Health Records */}
         <Link
           to="/my-records"
+          className="service-card"
           style={{
             backgroundColor: '#ffffff',
             borderRadius: '16px',
@@ -528,6 +531,7 @@ export function DashboardPage() {
         {/* Card 4: Register Patient */}
         <Link
           to="/register"
+          className="service-card"
           style={{
             backgroundColor: '#ffffff',
             borderRadius: '16px',
@@ -563,6 +567,7 @@ export function DashboardPage() {
         {/* Card 5: Nearest Clinics & Hospitals Map */}
         <Link
           to="/clinics"
+          className="service-card"
           style={{
             backgroundColor: '#ffffff',
             borderRadius: '16px',

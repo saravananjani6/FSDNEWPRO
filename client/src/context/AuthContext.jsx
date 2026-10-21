@@ -6,18 +6,18 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const cached = localStorage.getItem('vmcare_user') || localStorage.getItem('ashaseva_user');
+    const cached = localStorage.getItem('vmcare_user');
     return cached ? JSON.parse(cached) : null;
   });
   const [token, setToken] = useState(() => {
-    return localStorage.getItem('vmcare_auth_token') || localStorage.getItem('ashaseva_auth_token') || null;
+    return localStorage.getItem('vmcare_auth_token');
   });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // If deviceId doesn't exist, create one
     if (!localStorage.getItem('vmcare_device_id')) {
-      const devId = localStorage.getItem('ashaseva_device_id') || ('tablet-rural-' + Math.random().toString(36).substring(2, 9));
+      const devId = 'vmcare-' + Math.random().toString(36).substring(2, 9);
       localStorage.setItem('vmcare_device_id', devId);
     }
   }, []);
@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
       return { success: false, message: res.message || 'Invalid response from server' };
     } catch (error) {
       // If offline, check if matches cached user
-      const cached = localStorage.getItem('vmcare_user') || localStorage.getItem('ashaseva_user');
+      const cached = localStorage.getItem('vmcare_user');
       if (cached && error.isOffline) {
         const parsed = JSON.parse(cached);
         if (parsed.email.toLowerCase() === email.toLowerCase()) {
@@ -120,8 +120,6 @@ export function AuthProvider({ children }) {
     setToken(null);
     localStorage.removeItem('vmcare_user');
     localStorage.removeItem('vmcare_auth_token');
-    localStorage.removeItem('ashaseva_user');
-    localStorage.removeItem('ashaseva_auth_token');
   };
 
   return (

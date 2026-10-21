@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const healthUrl = `${apiBaseUrl.replace(/\/api\/?$/, '')}/api/health`;
+
 const NetworkContext = createContext();
 
 export function NetworkProvider({ children }) {
@@ -17,7 +20,7 @@ export function NetworkProvider({ children }) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3500);
 
-      const res = await fetch('http://localhost:5000/api/health', {
+      const res = await fetch(healthUrl, {
         method: 'GET',
         cache: 'no-store',
         signal: controller.signal

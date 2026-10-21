@@ -47,7 +47,10 @@
 
 body {
   font-family: 'Inter', 'Mukta Malar', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--bg-main);
+  background:
+    radial-gradient(circle at 8% -10%, rgba(20, 184, 166, 0.12), transparent 26rem),
+    radial-gradient(circle at 100% 0%, rgba(14, 165, 233, 0.13), transparent 30rem),
+    var(--bg-main);
   color: var(--text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -73,12 +76,13 @@ body {
    TOP APP HEADER & NAVBAR
    ============================================================ */
 .app-header {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.9);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 50;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(16px);
 }
 
 .header-container {
@@ -109,7 +113,7 @@ body {
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.28);
 }
 
 .brand-pulse {
@@ -273,7 +277,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.88);
   border: 1.5px solid var(--border-color);
   padding: 0.55rem 0.95rem;
   border-radius: var(--radius-md);
@@ -309,7 +313,7 @@ body {
   right: 0;
   bottom: 0;
   width: min(440px, 94vw);
-  background: #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   z-index: 1000;
   box-shadow: -10px 0 35px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -409,7 +413,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 500;
   transition: all 0.3s ease;
 }
@@ -539,6 +543,16 @@ body {
   gap: 1.5rem;
 }
 
+/* A lighter, more tactile patient-facing dashboard. No images are required, so it stays fast on slow connections. */
+.dashboard-container > .dashboard-header-row,
+.dashboard-container > div[style*="linear-gradient"] {
+  border-radius: 24px;
+}
+
+.dashboard-header-row {
+  padding: 0.4rem 0;
+}
+
 .dashboard-header-row {
   display: flex;
   align-items: center;
@@ -548,7 +562,7 @@ body {
 }
 
 .dashboard-title {
-  font-size: 1.75rem;
+  font-size: clamp(1.7rem, 3vw, 2.35rem);
   font-weight: 800;
   color: var(--text-main);
 }
@@ -578,7 +592,7 @@ body {
   font-size: 0.95rem;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   border: none;
   box-shadow: var(--shadow-sm);
 }
@@ -617,16 +631,67 @@ body {
   border-radius: var(--radius-md);
   padding: 1.25rem;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(148, 163, 184, 0.22);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: all 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.metric-card::after {
+  content: '';
+  position: absolute;
+  inset: auto -25% -60% auto;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.045;
 }
 
 .metric-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.service-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  right: -5rem;
+  top: -5rem;
+  background: currentColor;
+  opacity: 0.035;
+  z-index: -1;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.1) !important;
+}
+
+.service-card:focus-visible,
+.btn-action-primary:focus-visible,
+.btn-nav-hamburger:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(14, 165, 233, 0.42);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
 .metric-card-top {

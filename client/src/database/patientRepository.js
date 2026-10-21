@@ -78,7 +78,7 @@ export const patientRepository = {
       emergencyContact: patientData.emergencyContact || '',
       address: patientData.address || '',
       registeredBy: user ? user.name : 'Patient Self-Registration',
-      deviceId: localStorage.getItem('vmcare_device_id') || localStorage.getItem('ashaseva_device_id') || 'browser-client',
+      deviceId: localStorage.getItem('vmcare_device_id') || 'browser-client',
       version: 1,
       syncStatus: 'pending',
       createdAt: now,

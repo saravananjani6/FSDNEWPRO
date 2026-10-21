@@ -46,7 +46,7 @@ export const triageRepository = {
       confidenceLabel: recordData.confidenceLabel || '',
       notes: recordData.notes || '',
       healthcareWorkerName: user ? user.name : 'Patient Self-Assessment',
-      deviceId: localStorage.getItem('vmcare_device_id') || localStorage.getItem('ashaseva_device_id') || 'browser-client',
+      deviceId: localStorage.getItem('vmcare_device_id') || 'browser-client',
       version: 1,
       syncStatus: 'pending',
       createdAt: now,

@@ -32,7 +32,7 @@ export const syncService = {
           }
         }
 
-        const deviceId = localStorage.getItem('vmcare_device_id') || localStorage.getItem('ashaseva_device_id') || 'tablet-vmcare-01';
+        const deviceId = localStorage.getItem('vmcare_device_id') || 'tablet-vmcare-01';
 
         const pushResponse = await apiRequest('/sync/push', {
           method: 'POST',

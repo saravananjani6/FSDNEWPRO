@@ -13,8 +13,8 @@ const doctorAssistanceSchema = new mongoose.Schema({
 }, { _id: true });
 
 const patientSchema = new mongoose.Schema({
-  localId: { type: String, index: true },
-  patientId: { type: String, index: true },
+  localId: { type: String },
+  patientId: { type: String },
   name: { type: String, required: true, trim: true },
   age: { type: Number },
   ageGroup: { type: String, enum: ['infant', 'child', 'adult', 'older_adult'], default: 'adult' },

@@ -9,7 +9,7 @@ const starterRuleSet = require('./starterRules');
 dotenv.config();
 
 async function seed() {
-  await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ruralcare');
+  await mongoose.connect(process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/ruralcare');
 
   await User.findOneAndUpdate(
     { email: 'admin@ruralcare.local' },

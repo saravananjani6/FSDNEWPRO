@@ -39,6 +39,14 @@ export function Navbar() {
   const isActive = (path) => location.pathname === path;
   const isAdmin = user && user.role === 'admin';
   const isStaff = user && (user.role === 'health_worker' || user.role === 'doctor');
+  const roleBadge = user?.role === 'admin'
+    ? 'ADMIN'
+    : user?.role === 'doctor'
+    ? 'DOCTOR'
+    : user?.role === 'health_worker'
+    ? 'HEALTH WORKER'
+    : 'SELF CARE';
+  const roleBadgeColor = user?.role === 'admin' ? '#2563eb' : user?.role === 'doctor' ? '#7c3aed' : user?.role === 'health_worker' ? '#0f766e' : '#059669';
 
   // Listen for PWA Install Prompt
   useEffect(() => {
@@ -103,12 +111,12 @@ export function Navbar() {
                     fontWeight: 800,
                     padding: '2px 8px',
                     borderRadius: '999px',
-                    backgroundColor: isAdmin ? '#0284c7' : '#10b981',
+                    backgroundColor: roleBadgeColor,
                     color: '#ffffff',
                     letterSpacing: '0.04em'
                   }}
                 >
-                  {isAdmin ? 'ADMIN' : 'PATIENT APP'}
+                  {roleBadge}
                 </span>
               </div>
               <span className="brand-subtitle">{t('app_subtitle')}</span>
