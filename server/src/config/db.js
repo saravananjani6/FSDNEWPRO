@@ -7,7 +7,11 @@ module.exports = async function connectDB() {
 
   if (!connectionPromise) {
     connectionPromise = mongoose
-      .connect(process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/ruralcare')
+      .connect(process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/ruralcare', {
+        // Keep enough serverless execution time to return a useful error.
+        serverSelectionTimeoutMS: 7_000,
+        connectTimeoutMS: 7_000
+      })
       .then(() => {
         console.log('MongoDB connected');
         return mongoose.connection;

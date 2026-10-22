@@ -1,7 +1,11 @@
 {
+  "framework": null,
   "functions": {
-    "api/[...path].js": {
+    "api/index.js": {
       "maxDuration": 10
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api?path=$1" }
+  ]
 }
