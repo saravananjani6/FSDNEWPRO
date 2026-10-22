@@ -15,7 +15,7 @@ router.post('/', optionalAuth, logAudit('TRIAGE_ASSESSMENT_CREATE', 'TriageRecor
 
 // Admin-Protected Metrics & Triage Queue
 router.get('/dashboard/metrics', protect, requireAdmin, getDashboardMetrics);
-router.get('/', protect, requireRole('admin', 'doctor'), getAllTriageRecords);
+router.get('/', protect, requireRole('admin', 'health_worker', 'doctor'), getAllTriageRecords);
 router.get('/:id', optionalAuth, getTriageById);
 
 module.exports = router;

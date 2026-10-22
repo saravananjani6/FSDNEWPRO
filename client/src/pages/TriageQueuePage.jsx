@@ -20,6 +20,7 @@ import {
 
 export function TriageQueuePage() {
   const { user } = useAuth();
+  const { lang } = useLanguage();
   const isDoctor = user?.role === 'doctor';
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);

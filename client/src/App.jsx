@@ -24,7 +24,11 @@ import { AuditLogsPage } from './pages/AuditLogsPage';
 import { PrivacyDisclaimerPage } from './pages/PrivacyDisclaimerPage';
 
 // Heavy, network-dependent screens are loaded only when requested so triage opens quickly on slow networks.
-const SeniorSelfTriagePage = lazy(() => import('./pages/SeniorSelfTriagePage'));
+const SeniorSelfTriagePage = lazy(() =>
+  import('./pages/SeniorSelfTriagePage').then((module) => ({
+    default: module.SeniorSelfTriagePage
+  }))
+);
 const NearbyClinicsMapPage = lazy(() => import('./pages/NearbyClinicsMapPage'));
 
 function DeferredScreen({ children }) {
@@ -139,7 +143,7 @@ export function App() {
                 <Route
                   path="/queue"
                   element={
-                    <ProtectedRoute allowedRoles={['admin', 'doctor']}>
+                    <ProtectedRoute allowedRoles={['admin', 'health_worker', 'doctor']}>
                       <MainLayout>
                         <TriageQueuePage />
                       </MainLayout>
